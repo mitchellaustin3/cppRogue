@@ -1,0 +1,39 @@
+# Compiled Source #
+###################
+*.exe
+*.dll
+*.class
+*.o
+
+# Packages #
+############
+*.7z
+*.zip
+*.tar
+*.gz
+*.iso
+*.jar
+*.rar
+
+# Logs and DBs#
+###############
+*.log
+*.sql
+*.sqlite
+
+# OS generated files #
+######################
+.DS_STORE
+.DS_STORE?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Random Other Things #
+cursecheatsheet.txt
+nppsession
+bin/
+build/
+lib/
