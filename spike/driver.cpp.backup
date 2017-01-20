@@ -1,0 +1,129 @@
+//Game driver class
+#include "thing.cpp"
+#include "terrain.cpp"
+#include "screendriver.cpp"
+#include "map.cpp"
+#include <string>
+
+static ScreenDriver sd;
+static Map m;
+static int playerx, playery;
+static Thing player;
+void getInput();
+
+int main(){
+	
+	player = Thing( '@', 2);
+	playery = 5;
+	playerx = 5;
+	m.addThing(playerx,playery, &player);
+	m.printScreen(sd);
+	getInput();
+	sd.cleanUp();
+	
+	return 0;
+}
+
+void getInput(){
+	
+	//UP 259, 56
+	//DOWN 258, 50
+	//LEFT 260, 52
+	//RIGHT 261, 54
+	//UPLEFT 55
+	//UPRIGHT 57
+	//DOWNLEFT 49
+	//DOWNRIGHT 51
+	//q 113
+	
+	int c;
+
+	c = getch();
+	while(c != 113){
+		if(c == '\033' || (c > 0 && c < 10)){
+			getch();
+			
+			switch(getch()){
+				case 'A':
+				case 8:
+					sd.debugPrint("UP");
+					m.move(&player, "up");
+					/*
+					if(playery > 1){
+						m.move(&player,"up");
+						
+						m.removeThing(playerx,playery);
+						playery--;
+						m.addThing(playerx,playery,&player);
+					}
+					else{
+						sd.debugPrint("BUMP");
+					}
+					*/
+					break;
+				case 'B':
+				case 2:
+					sd.debugPrint("DOWN");
+					m.move(&player, "down");
+					/*
+					if(playery < 8){
+						m.removeThing(playerx,playery);
+						playery++;
+						m.addThing(playerx,playery,&player);
+					}	
+					else{
+						sd.debugPrint("BUMP");
+					}
+					*/
+					break;
+				case 'C':
+				case 6:
+					sd.debugPrint("RIGHT");
+					m.move(&player, "right");
+					/*
+					if(playerx < 8){
+						m.removeThing(playerx,playery);
+						playerx++;
+						m.addThing(playerx,playery,&player);
+					}
+					else{
+						sd.debugPrint("BUMP");
+					}
+					*/
+					break;
+				case 'D':
+				case 4:
+					sd.debugPrint("LEFT");
+					m.move(&player, "left");
+					/*
+					if(playerx > 1){
+						m.removeThing(playerx,playery);
+						playerx--;
+						m.addThing(playerx,playery,&player);
+					}
+					else{
+						sd.debugPrint("BUMP");
+					}
+					*/
+					break;
+				default:
+					std::string s = "THIS IS WRONG: ";
+					s+=c;
+					sd.debugPrint(s);
+					break;
+			}
+			m.printScreen(sd);
+			c = getch();
+			
+		}
+		else{
+			std::string s = "";
+			s+=c;
+			if(c == KEY_ENTER || c == '\n' || c == '\r')
+				s = "Enter";
+			sd.debugPrint(s);
+			c = getch();
+		}
+	}
+	return;
+}

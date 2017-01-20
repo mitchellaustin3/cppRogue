@@ -3,30 +3,51 @@
 #include <ncurses.h>
 //#include <stack>
 #include <array>
+#include <panel.h>
+#include <cstring>
 
 static int playerx;
 static int playery;
+static WINDOW *my_wins[3];
+static PANEL *my_panels[3];
 //static stack<object> map [100][100];
 char * intprtkey(int ch);
 int playermove();
 void writeChar(int y, int x, char c, int color);
+void print_in_middle(WINDOW *win, int starty, int startx, int width, char *string, int color);
 
-int main(void) {
+int main() {
+	WINDOW *my_wins[3];
+	PANEL *my_panels[3];
+	int lines = 20, cols = 40, w = 2, z = 4, u;
 	char playerSymbol = '@';
-    WINDOW* mainwin;
     int ch;
 	int height,width;
-	playerx = 5;
-	playery = 5;
+	playerx = 6;
+	playery = 6;
 
     /*  Initialize ncurses  */
-    if ( (mainwin = initscr()) == NULL ) {
-		fprintf(stderr, "Error initializing ncurses.\n");
-		exit(EXIT_FAILURE);
-    }
+    initscr();
+	noecho();
+	curs_set(0);
+	keypad(my_wins[0], TRUE);
+	
+	my_wins[0] = newwin(20, 40, 0,0);
+	my_wins[1] = newwin(10,20,0,30);
+	my_wins[2] = newwin(10,20,10,30);
+	for(u = 0; u<3; u++)
+		box(my_wins[u],0,0);
 
-    noecho();                  /*  Turn off key echoing                 */
-    keypad(mainwin, TRUE);     /*  Enable the keypad for non-char keys  */
+	my_panels[0] = new_panel(my_wins[0]);
+	my_panels[1] = new_panel(my_wins[1]);
+	my_panels[2] = new_panel(my_wins[2]);
+	top_panel(my_panels[0]);
+	top_panel(my_panels[1]);
+	top_panel(my_panels[2]);
+	update_panels();
+	wnoutrefresh(my_wins[0]);
+	doupdate();
+	refresh();
 	
 	if (has_colors())
     {
@@ -48,33 +69,30 @@ int main(void) {
     }
 
     /*  Print a prompt and refresh() the screen  */
-	wresize(mainwin,100,100);
-	attron(COLOR_PAIR(2));
-    hline('-', 12);
-	mvhline(11,0,'-', 12);
-	mvvline(1,0,'|', 10);
-	mvvline(1,11,'|', 10);
-	attroff(COLOR_PAIR(2));
-	attron(COLOR_PAIR(7));
+	//wresize(mainwin,100,100);
+	wattroff(my_wins[0],COLOR_PAIR(2));
+	wattron(my_wins[0],COLOR_PAIR(7));
 	for(int i = 1; i<11; i++){
 		for(int j = 1; j<11; j++){
-			mvaddch(i, j, '#');
+			mvwaddch(my_wins[0],i, j, '#');
 		}
 	}
-	attroff(COLOR_PAIR(7));
-	attron(COLOR_PAIR(1));
-	mvaddch(playery,playerx, '@');
-	attroff(COLOR_PAIR(1));
-    refresh();
+	wattroff(my_wins[0],COLOR_PAIR(7));
+	wattron(my_wins[0],COLOR_PAIR(3));
+	mvwaddch(my_wins[0],playery,playerx, '@');
+	wattroff(my_wins[0],COLOR_PAIR(3));
+    update_panels();
+	wnoutrefresh(my_wins[0]);
+	doupdate();
 	int c;
 	while(1){
 		c = playermove();
 		if(c == 2)
 			break;
 		if(c==0){
-			move(12,0);
-			clrtobot();
-			mvprintw(12,0, "BUMP");
+			wmove(my_wins[0],15,0);
+			wclrtobot(my_wins[0]);
+			mvwprintw(my_wins[0],12,0, "BUMP");
 		}
 	}
 	
@@ -101,7 +119,9 @@ int main(void) {
 	*/
 	
     /*  Clean up after ourselves  */
-    delwin(mainwin);
+    //delwin(my_wins[0]);
+	//delwin(my_wins[1]);
+	//delwin(my_wins[2]);
     endwin();
     refresh();
     return EXIT_SUCCESS;
@@ -109,20 +129,24 @@ int main(void) {
 
 //Function to write char to certain coords, + color
 void writeChar(int y, int x, char c, int color){
-	attron(COLOR_PAIR(color));
-	mvaddch(y,x,c);
-	attroff(COLOR_PAIR(color));
-	refresh();
+	wattron(my_wins[0],COLOR_PAIR(color));
+	mvwaddch(my_wins[0],y,x,c);
+	wattroff(my_wins[0],COLOR_PAIR(color));
+	update_panels();
+	wnoutrefresh(my_wins[0]);
+	doupdate();
 }
 
 // Function to move player symbol 1 space
 int playermove(){
 	int direction = getch();
-	move(12,0);
-	clrtobot();
-	mvprintw(12,0, "(MOVE)You pressed: 0x%x (%s)", direction, intprtkey(direction));
-	mvprintw(13,0, "%d", direction);
-	mvprintw(14,0, "Playerx: %d    Playery: %d", playerx, playery);
+	/*DEBUGGING STUFF
+	wmove(my_wins[0],12,0);
+	wclrtobot(my_wins[0]);
+	mvwprintw(my_wins[0],12,0, "(MOVE)You pressed: 0x%x (%s)", direction, intprtkey(direction));
+	mvwprintw(my_wins[0],13,0, "%d", direction);
+	mvwprintw(my_wins[0],14,0, "Playerx: %d    Playery: %d", playerx, playery);
+	*/
 	/*
 	switch(direction){
 		case 'A':
