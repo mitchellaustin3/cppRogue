@@ -87,7 +87,7 @@ void getInput(){
 }
 
 int main(){
-	
+	sd = ScreenDriver();
 	player = Thing( '@', 2);
 	playery = 5;
 	playerx = 5;

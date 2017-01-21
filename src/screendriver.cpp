@@ -1,6 +1,6 @@
 //Class for controlling screen (via ncurses)
 #include "screendriver.h"
-
+static WINDOW *mainwin;	
 ScreenDriver::ScreenDriver(){
 	mainwin = initscr();			/* Start curses mode 		  */	
 	if (has_colors()){

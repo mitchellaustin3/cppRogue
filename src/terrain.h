@@ -1,7 +1,8 @@
 #ifndef TERRAIN_H
 #define TERRAIN_H
 
-class Thing;
+#include "thing.h"
+
 class Terrain : public Thing{
 	public:
 		Terrain();

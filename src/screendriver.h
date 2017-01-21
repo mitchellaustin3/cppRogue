@@ -12,7 +12,5 @@ class ScreenDriver{
 		void cleanUp();
 		void debugPrint(std::string s);
 		void clearDebug();
-	protected:
-		static WINDOW *mainwin;	
 };
 #endif
