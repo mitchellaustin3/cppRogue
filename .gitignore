@@ -4,6 +4,7 @@
 *.dll
 *.class
 *.o
+*.stackdump
 
 # Packages #
 ############
